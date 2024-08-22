@@ -3,6 +3,14 @@ import "./App.css";
 function App() {
   return (
     <>
+      <div class="navbar">
+      <img src="logo.webp" alt="SliceOfPie Logo"/>
+      <a href="#home">Home</a>
+      <a href="#contact">Contact</a>
+      <a href="#about">About SliceOfPie</a>
+  </div>
+
+    <div className='main_container'>
       <div className="container">
         <h1>Data Visualization Tool</h1>
         <p>Upload your data to visualize</p>
@@ -16,6 +24,11 @@ function App() {
           <button id="create-btn">Create</button>
         </form>
       </div>
+
+      <div className="image_container">
+        <img src="/graph.jpg"/>
+      </div>
+    </div>
     </>
   );
 }
