@@ -46,7 +46,12 @@ label {
   font-weight: bold;
   text-align: left;
 }
-
+select{
+  color: #000;
+}
+option{
+  color: #000;
+}
 select,
 input[type="file"],
 button {
@@ -61,6 +66,7 @@ button {
 select,
 input[type="file"] {
   background-color: #f9f9f9;
+  color: #000;
 }
 
 button {
@@ -72,5 +78,6 @@ button {
 }
 
 button:hover {
-  background-color: #0056b3;
+  background-color: #666666;
+  border: none;
 }
