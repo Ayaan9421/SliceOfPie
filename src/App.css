@@ -1,3 +1,32 @@
+/* Add these new styles to App.css */
+
+.homepage {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f0f2f5;
+  text-align: center;
+}
+
+.get-started-btn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #7593af;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+
+.get-started-btn:hover {
+  background-color: #194a7a;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -13,14 +42,15 @@ body {
   margin: 0;
 }
 .navbar {
-  background-color: #333;
+  background-color: #476f95;
   overflow: hidden;
   display: flex;
   align-items: center;
-  padding: 20px;
+  padding: 10px;
 }
 .navbar img {
-  height: 70px; /* Adjust the height as needed */
+  height: 120px; /* Adjust the height as needed */
+  width: 120px;
   margin-right: 20px; /* Space between logo and menu items */
   margin-left: 20px; /* Space between logo and menu items */
 }
@@ -33,8 +63,9 @@ body {
   text-decoration: none;
 }
 .navbar a:hover {
-  background-color: #ddd;
+  background-color: #7593af;
   color: black;
+  border-radius: 30%;
 }
 .main_container{
   display: flex;
@@ -43,10 +74,11 @@ body {
   height: 100vh;
   width: 100vw;
   background-color: #ffffff;
-  padding: 0 50px;
+  padding: 0px 50px;
 }
 .container {
   background-color: #EEEDEB;
+  margin-left: 5%;
   padding: 2rem;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -55,7 +87,7 @@ body {
   width: 100%;
 }
 .image_container{
-
+  margin-right: 10%;
 }
 h1 {
   color: #333333;
@@ -103,7 +135,7 @@ input[type="file"] {
 }
 
 button {
-  background-color: #007bff;
+  background-color: #7593af;
   color: #ffffff;
   cursor: pointer;
   transition: background-color 0.3s ease;
@@ -111,6 +143,104 @@ button {
 }
 
 button:hover {
-  background-color: #666666;
+  background-color: #194a7a;
   border: none;
+}
+
+/* General styles */
+
+.app {
+  text-align: center;
+}
+
+/* Home page styles */
+
+.home-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.home-container h1 {
+  margin-bottom: 1rem;
+}
+
+.home-container p {
+  margin-bottom: 2rem;
+}
+
+.home-container button {
+  background-color: #7593af;
+  color: #ffffff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.home-container button:hover {
+  background-color: #194a7a;
+}
+
+/* Upload page styles */
+
+.upload-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.upload-container form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.upload-container button {
+  margin-top: 1rem;
+}
+
+/* Output page styles */
+
+.output-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.output-container h1 {
+  margin-bottom: 1rem;
+}
+
+/* Contact page styles */
+
+.contact-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 20px;
+}
+
+.contact-info {
+  margin-top: 1rem;
+}
+
+/* About page styles */
+
+.about-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 20px;
 }
