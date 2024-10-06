@@ -9,9 +9,13 @@ const Contact = () => {
           If you have any questions or feedback, feel free to reach out to us!
         </p>
         <div className="contact-info">
-          <p>Email: contact@sliceofpie.com</p>
-          <p>Phone: +1-234-567-890</p>
-          <p>Address: 123 Data St., Data City, DC 12345</p>
+          <p>Team Members: </p>
+          <ul>
+            <li>Ayaan Shaikh</li>
+            <li>Aayush Sharma</li>
+            <li>Simriti Tahilramani</li>
+          </ul>
+          <p>Project Guide: Sonal Shroff</p>
         </div>
       </div>
     </>
