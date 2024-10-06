@@ -13,7 +13,7 @@
 .get-started-btn {
   margin-top: 20px;
   padding: 10px 20px;
-  background-color: #7593af;
+  background-color: #111314;
   color: #ffffff;
   border: none;
   border-radius: 5px;
@@ -24,7 +24,7 @@
 
 
 .get-started-btn:hover {
-  background-color: #194a7a;
+  background-color:#666666;
 }
 
 * {
@@ -35,18 +35,19 @@
 }
 
 body {
-  background-color: #f0f2f5;
+  background-color: #ffffff;
   display: flex;
   justify-content: center;
   align-items: center;
   margin: 0;
 }
 .navbar {
-  background-color: #476f95;
+  background-color: #666666;
   overflow: hidden;
   display: flex;
   align-items: center;
   padding: 10px;
+  width: 100vw;
 }
 .navbar img {
   height: 120px; /* Adjust the height as needed */
@@ -63,7 +64,7 @@ body {
   text-decoration: none;
 }
 .navbar a:hover {
-  background-color: #7593af;
+  background-color: #666666;
   color: black;
   border-radius: 30%;
 }
@@ -98,6 +99,7 @@ h1 {
 p {
   color: #666666;
   margin-bottom: 2rem;
+  line-height: 30px;
 }
 
 form {
@@ -135,7 +137,7 @@ input[type="file"] {
 }
 
 button {
-  background-color: #7593af;
+  background-color: #666666;
   color: #ffffff;
   cursor: pointer;
   transition: background-color 0.3s ease;
@@ -143,7 +145,7 @@ button {
 }
 
 button:hover {
-  background-color: #194a7a;
+  background-color: #666666;
   border: none;
 }
 
@@ -155,12 +157,21 @@ button:hover {
 
 /* Home page styles */
 
+.home{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 40px;
+  overflow: hidden;
+}
 .home-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  margin-top: 0;
+  padding: 20px;
+  width: 50vw;
 }
 
 .home-container h1 {
@@ -172,7 +183,7 @@ button:hover {
 }
 
 .home-container button {
-  background-color: #7593af;
+  background-color:#666666;
   color: #ffffff;
   padding: 10px 20px;
   border: none;
@@ -182,7 +193,7 @@ button:hover {
 }
 
 .home-container button:hover {
-  background-color: #194a7a;
+  background-color: #666666;
 }
 
 /* Upload page styles */
@@ -192,7 +203,7 @@ button:hover {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  margin-top: 150px;
 }
 
 .upload-container form {
@@ -226,12 +237,26 @@ button:hover {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  height: 80vh;
   padding: 20px;
 }
-
+.contact-card{
+  width: fit-content;
+  padding: 20px;
+  border: 2px solid #666666;
+  border-radius: 30px;
+}
 .contact-info {
   margin-top: 1rem;
+}
+.inner-contact-info{
+  display: flex;
+  justify-content: center;
+}
+.inner-contact-info img {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
 }
 
 /* About page styles */
@@ -241,6 +266,25 @@ button:hover {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  height: 80vh;
   padding: 20px;
+}
+.about-card{
+  width: 30%;
+  padding: 20px;
+  border: 2px solid #666666;
+  border-radius: 30px;
+}
+.image-section {
+  flex: 1;
+  text-align: left;
+}
+.image-section img {
+  width: 100%;
+  height: auto;
+}
+
+.data-image {
+  max-width: 100%;
+  height: auto;
 }
