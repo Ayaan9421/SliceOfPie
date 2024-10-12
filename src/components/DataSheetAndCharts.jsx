@@ -1,90 +1,135 @@
-import React, { useState, useEffect } from 'react';
-import * as d3 from 'd3';
-import Papa from 'papaparse';
-import { read, utils } from 'xlsx'; // Correct import for xlsx
-import '../App.css'; // Adjust the import path if needed
+import React, { useState, useEffect, useRef } from "react";
+import Papa from "papaparse";
+import { read, utils } from "xlsx"; // Correct import for xlsx
+import { Chart } from "chart.js/auto"; // Import Chart.js
+import "../App.css"; // Ensure this path is correct
 
 const DataSheetAndChart = ({ file, fileType }) => {
   const [data, setData] = useState([]);
   const [chartData, setChartData] = useState([]);
+  const [labels, setLabels] = useState({ xLabel: "", yLabel: "" });
+  const [chartType, setChartType] = useState("bar"); // Default to 'bar' chart
+  const chartRef = useRef(null); // Using useRef to manage the chart reference
+  const [chartInstance, setChartInstance] = useState(null);
 
   useEffect(() => {
     const reader = new FileReader();
     reader.onload = (e) => {
-      if (fileType === 'csv') {
+      if (fileType === "csv") {
         Papa.parse(e.target.result, {
-          header: false,
+          header: true, // Automatically treat the first row as headers
           skipEmptyLines: true,
           complete: (result) => {
+            const header = result.meta.fields;
+            setLabels({ xLabel: header[0], yLabel: header[1] });
             setData(result.data);
-            processAndRenderChart(result.data);
           },
         });
-      } else if (fileType === 'xlsx') {
-        const workbook = read(e.target.result, { type: 'binary' });
+      } else if (fileType === "xlsx") {
+        const workbook = read(e.target.result, { type: "binary" });
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
         const jsonData = utils.sheet_to_json(sheet, { header: 1 });
-        setData(jsonData);
-        processAndRenderChart(jsonData);
+        const [header, ...rows] = jsonData;
+        const dataWithKeys = rows.map((row) => ({
+          [header[0]]: row[0],
+          [header[1]]: row[1],
+        }));
+        setLabels({ xLabel: header[0], yLabel: header[1] });
+        setData(dataWithKeys);
       }
     };
     reader.readAsBinaryString(file);
   }, [file, fileType]);
 
+  useEffect(() => {
+    if (data.length && chartRef.current) {
+      processAndRenderChart(data);
+    }
+  }, [data, chartType]); // Rerun when chartType changes or data updates
+
   const processAndRenderChart = (data) => {
-    const processedData = data.map(d => ({
-      name: d[0],
-      value: +d[1]
+    const processedData = data.map((d) => ({
+      name: d[labels.xLabel],
+      value: +d[labels.yLabel],
     }));
     setChartData(processedData);
-    renderChart(processedData);
-  };
 
-  const handleDataChange = (index, field, value) => {
-    const updatedData = [...data];
-    updatedData[index][field] = value;
-    setData(updatedData);
-    processAndRenderChart(updatedData);
+    if (chartInstance) {
+      chartInstance.destroy(); // Destroy the existing chart before rendering a new one
+    }
+
+    const newChartInstance = renderChart(processedData);
+    setChartInstance(newChartInstance); // Save chart instance for future updates
   };
 
   const renderChart = (data) => {
-    d3.select("#chart").selectAll("*").remove();
+    const ctx = chartRef.current.getContext("2d");
 
-    const svg = d3.select("#chart")
-      .append("svg")
-      .attr("width", 400)
-      .attr("height", 300);
+    // Dynamically set the background color based on whether the value is positive or negative
+    const backgroundColors = data.map((d) => (d.value >= 0 ? "blue" : "red"));
 
-    const x = d3.scaleBand()
-      .domain(data.map(d => d.name))
-      .range([0, 400])
-      .padding(0.1);
+    return new Chart(ctx, {
+      type: chartType,
+      data: {
+        labels: data.map((d) => d.name),
+        datasets: [
+          {
+            label: "Values",
+            data: data.map((d) => d.value),
+            backgroundColor: backgroundColors, // Apply the colors dynamically
+          },
+        ],
+      },
+      options: {
+        scales: {
+          x:
+            chartType === "line" || chartType === "bar"
+              ? {
+                  title: {
+                    display: true,
+                    text: labels.xLabel,
+                  },
+                }
+              : undefined,
+          y:
+            chartType === "line" || chartType === "bar"
+              ? {
+                  beginAtZero: true,
+                  title: {
+                    display: true,
+                    text: labels.yLabel,
+                  },
+                }
+              : undefined,
+        },
+      },
+    });
+  };
 
-    const y = d3.scaleLinear()
-      .domain([0, d3.max(data, d => d.value)])
-      .nice()
-      .range([300, 0]);
+  // Handle changes in the input fields of the table
+  const handleDataChange = (index, field, value) => {
+    const updatedData = [...data];
+    updatedData[index] = { ...updatedData[index], [field]: value };
+    setData(updatedData);
+  };
 
-    svg.selectAll(".bar")
-      .data(data)
-      .enter().append("rect")
-      .attr("class", "bar")
-      .attr("x", d => x(d.name))
-      .attr("y", d => y(d.value))
-      .attr("width", x.bandwidth())
-      .attr("height", d => 300 - y(d.value))
-      .attr("fill", "steelblue");
+  const handleChartTypeChange = (e) => {
+    setChartType(e.target.value);
+  };
+
+  const isPieOrDonutValid = () => {
+    return chartData.every((d) => d.value > 0); // Pie/Donut charts require positive values
   };
 
   return (
-    <div style={{ display: 'flex' }}>
-      <div style={{ flex: 1, padding: '10px' }}>
-        <table>
+    <div>
+      <div className="data-container">
+        <table className="data-table">
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Value</th>
+              <th>{labels.xLabel}</th>
+              <th>{labels.yLabel}</th>
             </tr>
           </thead>
           <tbody>
@@ -93,23 +138,74 @@ const DataSheetAndChart = ({ file, fileType }) => {
                 <td>
                   <input
                     type="text"
-                    value={row[0]}
-                    onChange={(e) => handleDataChange(index, 0, e.target.value)}
+                    value={row[labels.xLabel] || ""}
+                    onChange={(e) =>
+                      handleDataChange(index, labels.xLabel, e.target.value)
+                    }
                   />
                 </td>
                 <td>
                   <input
                     type="number"
-                    value={row[1]}
-                    onChange={(e) => handleDataChange(index, 1, e.target.value)}
+                    value={row[labels.yLabel] || ""}
+                    onChange={(e) =>
+                      handleDataChange(index, labels.yLabel, e.target.value)
+                    }
                   />
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+        <div id="chart">
+          <canvas ref={chartRef} width="500" height="400"></canvas>{" "}
+          {/* Fixed dimensions */}
+        </div>
       </div>
-      <div id="chart" style={{ flex: 1, padding: '10px' }}></div>
+
+      {/* Radio buttons to switch between chart types */}
+      <div className="chart-type-options">
+        <label>
+          <input
+            type="radio"
+            value="bar"
+            checked={chartType === "bar"}
+            onChange={handleChartTypeChange}
+          />
+          Bar Chart
+        </label>
+        <label>
+          <input
+            type="radio"
+            value="line"
+            checked={chartType === "line"}
+            onChange={handleChartTypeChange}
+          />
+          Line Chart
+        </label>
+        {isPieOrDonutValid() && (
+          <>
+            <label>
+              <input
+                type="radio"
+                value="pie"
+                checked={chartType === "pie"}
+                onChange={handleChartTypeChange}
+              />
+              Pie Chart
+            </label>
+            <label>
+              <input
+                type="radio"
+                value="doughnut"
+                checked={chartType === "doughnut"}
+                onChange={handleChartTypeChange}
+              />
+              Donut Chart
+            </label>
+          </>
+        )}
+      </div>
     </div>
   );
 };

@@ -1,7 +1,7 @@
-import React from 'react';
-import { useLocation } from 'react-router-dom';
-import DataSheetAndChart from '../components/DataSheetAndCharts';
-import '../App.css'; // Ensure this path is correct
+import React from "react";
+import { useLocation } from "react-router-dom";
+import DataSheetAndChart from "../components/DataSheetAndCharts";
+import "../App.css"; // Ensure this path is correct
 
 const Output = () => {
   const location = useLocation();

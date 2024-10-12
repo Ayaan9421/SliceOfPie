@@ -15,8 +15,8 @@ const Home = () => {
         </p>
         <button onClick={() => navigate("/upload")}>Get Started</button>
       </div>
-      <div class="image-section">
-        <img src="graph.jpg" alt="Data Chart" class="data-image" />
+      <div className="image-section">
+        <img src="graph.jpg" alt="Data Chart" className="data-image" />
       </div>
     </div>
   );

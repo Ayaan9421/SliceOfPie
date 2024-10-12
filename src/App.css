@@ -22,9 +22,8 @@
   transition: background-color 0.3s ease;
 }
 
-
 .get-started-btn:hover {
-  background-color:#666666;
+  background-color: #666666;
 }
 
 * {
@@ -40,6 +39,7 @@ body {
   justify-content: center;
   align-items: center;
   margin: 0;
+  overflow-x: hidden;
 }
 .navbar {
   background-color: #666666;
@@ -68,7 +68,7 @@ body {
   color: black;
   border-radius: 30%;
 }
-.main_container{
+.main_container {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -78,7 +78,7 @@ body {
   padding: 0px 50px;
 }
 .container {
-  background-color: #EEEDEB;
+  background-color: #eeedeb;
   margin-left: 5%;
   padding: 2rem;
   border-radius: 10px;
@@ -87,7 +87,7 @@ body {
   max-width: 600px;
   width: 100%;
 }
-.image_container{
+.image_container {
   margin-right: 10%;
 }
 h1 {
@@ -113,10 +113,10 @@ label {
   font-weight: bold;
   text-align: left;
 }
-select{
+select {
   color: #000;
 }
-option{
+option {
   color: #000;
 }
 select,
@@ -157,7 +157,7 @@ button:hover {
 
 /* Home page styles */
 
-.home{
+.home {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -183,7 +183,7 @@ button:hover {
 }
 
 .home-container button {
-  background-color:#666666;
+  background-color: #666666;
   color: #ffffff;
   padding: 10px 20px;
   border: none;
@@ -218,7 +218,7 @@ button:hover {
 
 /* Output page styles */
 
-.output-container {
+/* .output-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -228,7 +228,7 @@ button:hover {
 
 .output-container h1 {
   margin-bottom: 1rem;
-}
+} */
 
 /* Contact page styles */
 
@@ -240,7 +240,7 @@ button:hover {
   height: 80vh;
   padding: 20px;
 }
-.contact-card{
+.contact-card {
   width: fit-content;
   padding: 20px;
   border: 2px solid #666666;
@@ -249,7 +249,7 @@ button:hover {
 .contact-info {
   margin-top: 1rem;
 }
-.inner-contact-info{
+.inner-contact-info {
   display: flex;
   justify-content: center;
 }
@@ -269,7 +269,7 @@ button:hover {
   height: 80vh;
   padding: 20px;
 }
-.about-card{
+.about-card {
   width: 30%;
   padding: 20px;
   border: 2px solid #666666;
@@ -287,4 +287,92 @@ button:hover {
 .data-image {
   max-width: 100%;
   height: auto;
+}
+
+/* error message css if the file type doesnt match */
+.error-message {
+  color: red;
+  font-size: 14px;
+  margin-top: 10px;
+}
+/* For Output page - ensure better alignment and larger size for table and chart */
+.output-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.output-container h1 {
+  margin-bottom: 30px;
+  font-size: 28px; /* Increase heading font size */
+}
+
+/* Ensure better positioning for table and chart */
+form + table {
+  margin-right: 40px;
+  width: 70%; /* Increase width of the table */
+  margin-bottom: 20px;
+  padding: 20px; /* Add padding around the table */
+  font-size: 20px; /* Make the table text bigger */
+}
+
+form + table input {
+  width: 100%;
+  padding: 15px; /* Increase padding for larger input fields */
+  margin-bottom: 15px;
+  font-size: 18px; /* Increase input text size */
+  box-sizing: border-box;
+}
+
+form + table th,
+form + table td {
+  text-align: center;
+  padding: 16px 14px; /* Increase padding for better spacing */
+  font-size: 20px; /* Make table headings and data larger */
+}
+
+/* Position the chart beside the table, both centered */
+form + table + #chart {
+  width: 600px;
+  height: 400px;
+  display: block;
+  margin-left: 40px;
+  margin-bottom: 20px;
+}
+
+/* Ensure the canvas is fully responsive */
+canvas {
+  width: 100% !important;
+  height: auto !important;
+}
+
+/* General styles for table and chart container */
+.data-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Control the size of the chart */
+#chart {
+  max-width: 600px; /* Limit the chart's maximum width */
+  margin: 0 auto;
+  margin-top: 20px;
+}
+
+/* Style for radio buttons to position below the chart */
+.chart-type-options {
+  margin-top: 20px; /* Add space between chart and radio buttons */
+  display: flex;
+  justify-content: center;
+  gap: 15px; /* Space between each radio button */
+}
+
+.chart-type-options label {
+  font-size: 18px; /* Make the text for options larger */
 }
