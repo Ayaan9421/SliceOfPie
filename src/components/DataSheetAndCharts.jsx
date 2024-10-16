@@ -66,8 +66,20 @@ const DataSheetAndChart = ({ file, fileType }) => {
   const renderChart = (data) => {
     const ctx = chartRef.current.getContext("2d");
 
-    // Dynamically set the background color based on whether the value is positive or negative
-    const backgroundColors = data.map((d) => (d.value >= 0 ? "blue" : "red"));
+    // Function to generate random colors
+    const generateRandomColors = (numColors) => {
+      const colors = [];
+      for (let i = 0; i < numColors; i++) {
+        const color = `hsl(${Math.floor(Math.random() * 360)}, 100%, 50%)`; // Generate random HSL color
+        colors.push(color);
+      }
+      return colors;
+    };
+
+    // Generate enough colors for the data points
+    const backgroundColors = generateRandomColors(data.length);
+
+    const isPieOrDonut = chartType === "pie" || chartType === "doughnut";
 
     return new Chart(ctx, {
       type: chartType,
@@ -77,32 +89,29 @@ const DataSheetAndChart = ({ file, fileType }) => {
           {
             label: "Values",
             data: data.map((d) => d.value),
-            backgroundColor: backgroundColors, // Apply the colors dynamically
+            backgroundColor: backgroundColors, // Apply dynamically generated colors
           },
         ],
       },
       options: {
-        scales: {
-          x:
-            chartType === "line" || chartType === "bar"
-              ? {
-                  title: {
-                    display: true,
-                    text: labels.xLabel,
-                  },
-                }
-              : undefined,
-          y:
-            chartType === "line" || chartType === "bar"
-              ? {
-                  beginAtZero: true,
-                  title: {
-                    display: true,
-                    text: labels.yLabel,
-                  },
-                }
-              : undefined,
-        },
+        responsive: false, // Prevent Chart.js from resizing the canvas
+        scales: isPieOrDonut
+          ? {} // No scales for Pie or Donut charts
+          : {
+              x: {
+                title: {
+                  display: true,
+                  text: labels.xLabel,
+                },
+              },
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: labels.yLabel,
+                },
+              },
+            },
       },
     });
   };
@@ -157,9 +166,16 @@ const DataSheetAndChart = ({ file, fileType }) => {
             ))}
           </tbody>
         </table>
-        <div id="chart">
-          <canvas ref={chartRef} width="500" height="400"></canvas>{" "}
-          {/* Fixed dimensions */}
+        <div
+          id="chart"
+          className={
+            chartType === "pie" || chartType === "doughnut"
+              ? "pie-donut-chart"
+              : ""
+          }
+        >
+          <canvas ref={chartRef} width="300" height="300"></canvas>{" "}
+          {/* Explicitly set width and height */}
         </div>
       </div>
 

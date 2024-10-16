@@ -42,12 +42,13 @@ body {
   overflow-x: hidden;
 }
 .navbar {
-  background-color: #666666;
+  background-color: #43b0f1;
   overflow: hidden;
   display: flex;
   align-items: center;
   padding: 10px;
   width: 100vw;
+  height: 90px;
 }
 .navbar img {
   height: 120px; /* Adjust the height as needed */
@@ -64,7 +65,7 @@ body {
   text-decoration: none;
 }
 .navbar a:hover {
-  background-color: #666666;
+  background-color: #057dcd;
   color: black;
   border-radius: 30%;
 }
@@ -137,7 +138,7 @@ input[type="file"] {
 }
 
 button {
-  background-color: #666666;
+  background-color: #43b0f1;
   color: #ffffff;
   cursor: pointer;
   transition: background-color 0.3s ease;
@@ -145,7 +146,7 @@ button {
 }
 
 button:hover {
-  background-color: #666666;
+  background-color: #057dcd;
   border: none;
 }
 
@@ -183,7 +184,7 @@ button:hover {
 }
 
 .home-container button {
-  background-color: #666666;
+  background-color: #43b0f1;
   color: #ffffff;
   padding: 10px 20px;
   border: none;
@@ -193,7 +194,7 @@ button:hover {
 }
 
 .home-container button:hover {
-  background-color: #666666;
+  background-color: #057dcd;
 }
 
 /* Upload page styles */
@@ -348,19 +349,20 @@ canvas {
   height: auto !important;
 }
 
-/* General styles for table and chart container */
-.data-container {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
+/* Control the general size of the chart */
+#chart {
+  max-width: 400px;
+  max-height: 300px;
   width: 100%;
-  max-width: 1200px;
+  height: auto;
   margin: 0 auto;
+  margin-top: 20px;
 }
 
-/* Control the size of the chart */
-#chart {
-  max-width: 600px; /* Limit the chart's maximum width */
+/* Special case for Pie and Donut charts */
+.pie-donut-chart {
+  max-width: 300px; /* Set smaller width for Pie and Donut charts */
+  max-height: 300px; /* Set smaller height for Pie and Donut charts */
   margin: 0 auto;
   margin-top: 20px;
 }
@@ -373,6 +375,44 @@ canvas {
   gap: 15px; /* Space between each radio button */
 }
 
+/* .chart-type-options label {
+  font-size: 18px;  Make the text for options larger 
+} */
+
+/* Ensure text does not overlap chart */
+.data-container {
+  display: flex;
+  justify-content: center; /* Align both elements in the center */
+  align-items: center; /* Vertically align elements in the center */
+  margin-top: 20px;
+  width: 100%;
+}
+
+.data-table {
+  margin-right: 50px; /* Adjust the distance between the table and the chart */
+  margin-top: 40px; /* Move the table down */
+}
+
+.data-table input {
+  font-size: 16px;
+  padding: 5px;
+  width: 100px;
+}
+
 .chart-type-options label {
-  font-size: 18px; /* Make the text for options larger */
+  font-size: 18px;
+}
+
+/* Ensure that the canvas gets the proper size for Pie and Donut charts */
+.pie-donut-chart canvas {
+  max-width: 300px !important;
+  max-height: 300px !important;
+  width: 300px !important;
+  height: 300px !important;
+}
+
+/* Ensure other charts are also appropriately sized */
+#chart canvas {
+  max-width: 400px;
+  max-height: 300px;
 }
