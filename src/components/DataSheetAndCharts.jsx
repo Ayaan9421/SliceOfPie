@@ -1,28 +1,60 @@
 import React, { useState, useEffect, useRef } from "react";
 import Papa from "papaparse";
-import { read, utils } from "xlsx"; // Correct import for xlsx
-import { Chart } from "chart.js/auto"; // Import Chart.js
+import { read, utils } from "xlsx";
+import { Chart } from "chart.js/auto";
 import "../App.css"; // Ensure this path is correct
 
 const DataSheetAndChart = ({ file, fileType }) => {
   const [data, setData] = useState([]);
-  const [chartData, setChartData] = useState([]);
-  const [labels, setLabels] = useState({ xLabel: "", yLabel: "" });
+  const [labels, setLabels] = useState([]);
   const [chartType, setChartType] = useState("bar"); // Default to 'bar' chart
-  const chartRef = useRef(null); // Using useRef to manage the chart reference
+  const chartRef = useRef(null);
   const [chartInstance, setChartInstance] = useState(null);
+  const [validChartTypes, setValidChartTypes] = useState([]);
+  const [hasNegativeValues, setHasNegativeValues] = useState(false); // State to track negative values
+
+  // Detect if a column should be treated as numerical based on consistency
+  const isIncrementingColumn = (data, field) => {
+    const values = data
+      .map((row) => parseFloat(row[field]))
+      .filter((v) => !isNaN(v));
+    return (
+      values.length > 1 &&
+      values.every((val, index) => index === 0 || val - values[index - 1] === 1)
+    );
+  };
+
+  const isNumericColumn = (data, field) => {
+    return (
+      data.every((row) => !isNaN(parseFloat(row[field]))) &&
+      !isIncrementingColumn(data, field)
+    );
+  };
+
+  // Generate random colors for graphs
+  const generateRandomColor = () => {
+    const r = Math.floor(Math.random() * 255);
+    const g = Math.floor(Math.random() * 255);
+    const b = Math.floor(Math.random() * 255);
+    return `rgb(${r}, ${g}, ${b})`;
+  };
+
+  // Generate distinct colors for each data point or dataset
+  const generateRandomColors = (numColors) => {
+    return Array.from({ length: numColors }, () => generateRandomColor());
+  };
 
   useEffect(() => {
     const reader = new FileReader();
     reader.onload = (e) => {
       if (fileType === "csv") {
         Papa.parse(e.target.result, {
-          header: true, // Automatically treat the first row as headers
+          header: true,
           skipEmptyLines: true,
           complete: (result) => {
-            const header = result.meta.fields;
-            setLabels({ xLabel: header[0], yLabel: header[1] });
+            setLabels(result.meta.fields);
             setData(result.data);
+            validateChartTypes(result.data, result.meta.fields);
           },
         });
       } else if (fileType === "xlsx") {
@@ -31,104 +63,142 @@ const DataSheetAndChart = ({ file, fileType }) => {
         const sheet = workbook.Sheets[sheetName];
         const jsonData = utils.sheet_to_json(sheet, { header: 1 });
         const [header, ...rows] = jsonData;
-        const dataWithKeys = rows.map((row) => ({
-          [header[0]]: row[0],
-          [header[1]]: row[1],
-        }));
-        setLabels({ xLabel: header[0], yLabel: header[1] });
+        const dataWithKeys = rows.map((row) => {
+          let obj = {};
+          header.forEach((key, index) => {
+            obj[key] = row[index];
+          });
+          return obj;
+        });
+        setLabels(header);
         setData(dataWithKeys);
+        validateChartTypes(dataWithKeys, header);
       }
     };
     reader.readAsBinaryString(file);
   }, [file, fileType]);
 
+  const validateChartTypes = (data, headers) => {
+    const numColumns = headers.length;
+
+    // Check for negative values in numeric columns
+    const hasNegatives = headers.some((header) => {
+      return (
+        isNumericColumn(data, header) &&
+        data.some((row) => parseFloat(row[header]) < 0)
+      );
+    });
+
+    // Store the result of negative value check in state
+    setHasNegativeValues(hasNegatives);
+
+    // Validate which chart types can be shown
+    const validTypes = [];
+
+    // Bar, Line, and Radar charts are valid if we have multiple rows and multiple columns
+    if (data.length && numColumns > 2) {
+      validTypes.push("bar", "line", "radar");
+    }
+
+    // Pie and Donut charts are valid only if no negative values are present
+    else if (numColumns === 2 && !hasNegatives) {
+      validTypes.push("bar", "line", "pie", "doughnut");
+    } else {
+      validTypes.push("bar", "line"); // Always include bar and line charts
+    }
+
+    setValidChartTypes(validTypes);
+  };
+
   useEffect(() => {
     if (data.length && chartRef.current) {
-      processAndRenderChart(data);
+      processAndRenderChart();
     }
   }, [data, chartType]); // Rerun when chartType changes or data updates
 
-  const processAndRenderChart = (data) => {
-    const processedData = data.map((d) => ({
-      name: d[labels.xLabel],
-      value: +d[labels.yLabel],
-    }));
-    setChartData(processedData);
-
-    if (chartInstance) {
-      chartInstance.destroy(); // Destroy the existing chart before rendering a new one
-    }
-
-    const newChartInstance = renderChart(processedData);
-    setChartInstance(newChartInstance); // Save chart instance for future updates
-  };
-
-  const renderChart = (data) => {
+  const processAndRenderChart = () => {
     const ctx = chartRef.current.getContext("2d");
 
-    // Function to generate random colors
-    const generateRandomColors = (numColors) => {
-      const colors = [];
-      for (let i = 0; i < numColors; i++) {
-        const color = `hsl(${Math.floor(Math.random() * 360)}, 100%, 50%)`; // Generate random HSL color
-        colors.push(color);
-      }
-      return colors;
-    };
+    console.log("Data:", data);
+    console.log("Labels:", labels);
 
-    // Generate enough colors for the data points
-    const backgroundColors = generateRandomColors(data.length);
+    const xAxisLabel = labels.find((label) => !isNumericColumn(data, label));
+    const yAxisLabels = labels.filter((label) => isNumericColumn(data, label));
 
-    const isPieOrDonut = chartType === "pie" || chartType === "doughnut";
+    const xAxisDisplayLabels = data.map((row) => {
+      return labels
+        .filter((label) => !isNumericColumn(data, label))
+        .map((label) => row[label])
+        .join(" - ");
+    });
 
-    return new Chart(ctx, {
+    if (!xAxisLabel || !yAxisLabels.length) {
+      console.error("No valid categorical or numerical data for chart.");
+      return;
+    }
+
+    const datasets = yAxisLabels.map((subject, index) => {
+      const dataValues = data.map((row) => parseFloat(row[subject]) || 0);
+      return {
+        label: subject,
+        data: dataValues,
+        backgroundColor:
+          chartType !== "radar"
+            ? generateRandomColors(dataValues.length)
+            : `hsl(${(index * 60) % 360}, 50%, 60%, 0.5)`,
+        borderColor:
+          chartType !== "radar"
+            ? generateRandomColors(dataValues.length)
+            : `hsl(${(index * 60) % 360}, 100%, 50%)`,
+        fill: chartType !== "line",
+      };
+    });
+
+    if (chartInstance) {
+      chartInstance.destroy();
+    }
+
+    const newChartInstance = new Chart(ctx, {
       type: chartType,
       data: {
-        labels: data.map((d) => d.name),
-        datasets: [
-          {
-            label: "Values",
-            data: data.map((d) => d.value),
-            backgroundColor: backgroundColors, // Apply dynamically generated colors
-          },
-        ],
+        labels: xAxisDisplayLabels,
+        datasets: datasets,
       },
       options: {
-        responsive: false, // Prevent Chart.js from resizing the canvas
-        scales: isPieOrDonut
-          ? {} // No scales for Pie or Donut charts
-          : {
-              x: {
-                title: {
-                  display: true,
-                  text: labels.xLabel,
-                },
-              },
-              y: {
-                beginAtZero: true,
-                title: {
-                  display: true,
-                  text: labels.yLabel,
-                },
-              },
+        scales: {
+          x: {
+            stacked: chartType === "bar",
+            title: {
+              display: true,
+              text: xAxisLabel,
             },
+          },
+          y: {
+            stacked: chartType === "bar",
+            beginAtZero: true,
+            title: {
+              display: true,
+              text:
+                chartType === "pie" || chartType === "doughnut" ? "" : "Value",
+            },
+          },
+        },
       },
     });
+    setChartInstance(newChartInstance);
   };
 
-  // Handle changes in the input fields of the table
-  const handleDataChange = (index, field, value) => {
+  const handleInputChange = (index, label, value) => {
     const updatedData = [...data];
-    updatedData[index] = { ...updatedData[index], [field]: value };
+    updatedData[index][label] = value;
     setData(updatedData);
+
+    // Validate chart types after updating data to check for negatives
+    validateChartTypes(updatedData, labels);
   };
 
   const handleChartTypeChange = (e) => {
     setChartType(e.target.value);
-  };
-
-  const isPieOrDonutValid = () => {
-    return chartData.every((d) => d.value > 0); // Pie/Donut charts require positive values
   };
 
   return (
@@ -137,91 +207,62 @@ const DataSheetAndChart = ({ file, fileType }) => {
         <table className="data-table">
           <thead>
             <tr>
-              <th>{labels.xLabel}</th>
-              <th>{labels.yLabel}</th>
+              {labels.map((label, index) => (
+                <th key={index}>{label}</th>
+              ))}
             </tr>
           </thead>
           <tbody>
-            {data.map((row, index) => (
-              <tr key={index}>
-                <td>
-                  <input
-                    type="text"
-                    value={row[labels.xLabel] || ""}
-                    onChange={(e) =>
-                      handleDataChange(index, labels.xLabel, e.target.value)
-                    }
-                  />
-                </td>
-                <td>
-                  <input
-                    type="number"
-                    value={row[labels.yLabel] || ""}
-                    onChange={(e) =>
-                      handleDataChange(index, labels.yLabel, e.target.value)
-                    }
-                  />
-                </td>
+            {data.map((row, rowIndex) => (
+              <tr key={rowIndex}>
+                {labels.map((label, colIndex) => (
+                  <td key={colIndex}>
+                    <input
+                      type={isNumericColumn(data, label) ? "number" : "text"}
+                      value={row[label] || ""}
+                      onChange={(e) =>
+                        handleInputChange(rowIndex, label, e.target.value)
+                      }
+                      style={{
+                        width: "100px",
+                      }}
+                    />
+                  </td>
+                ))}
               </tr>
             ))}
           </tbody>
         </table>
-        <div
-          id="chart"
-          className={
-            chartType === "pie" || chartType === "doughnut"
-              ? "pie-donut-chart"
-              : ""
-          }
-        >
-          <canvas ref={chartRef} width="300" height="300"></canvas>{" "}
-          {/* Explicitly set width and height */}
+        <div id="chart">
+          <canvas ref={chartRef}></canvas>
         </div>
       </div>
 
-      {/* Radio buttons to switch between chart types */}
-      <div className="chart-type-options">
-        <label>
-          <input
-            type="radio"
-            value="bar"
-            checked={chartType === "bar"}
+      {/* Dropdown to select chart type */}
+      {validChartTypes.length > 0 && (
+        <div className="chart-type-options" style={{ marginTop: "20px" }}>
+          <label htmlFor="chart-type-select">Select Chart Type:</label>
+          <select
+            id="chart-type-select"
+            value={chartType}
             onChange={handleChartTypeChange}
-          />
-          Bar Chart
-        </label>
-        <label>
-          <input
-            type="radio"
-            value="line"
-            checked={chartType === "line"}
-            onChange={handleChartTypeChange}
-          />
-          Line Chart
-        </label>
-        {isPieOrDonutValid() && (
-          <>
-            <label>
-              <input
-                type="radio"
-                value="pie"
-                checked={chartType === "pie"}
-                onChange={handleChartTypeChange}
-              />
-              Pie Chart
-            </label>
-            <label>
-              <input
-                type="radio"
-                value="doughnut"
-                checked={chartType === "doughnut"}
-                onChange={handleChartTypeChange}
-              />
-              Donut Chart
-            </label>
-          </>
-        )}
-      </div>
+          >
+            {validChartTypes
+              .filter(
+                (type) =>
+                  !(
+                    hasNegativeValues &&
+                    (type === "pie" || type === "doughnut")
+                  )
+              )
+              .map((type) => (
+                <option key={type} value={type}>
+                  {type.charAt(0).toUpperCase() + type.slice(1)} Chart
+                </option>
+              ))}
+          </select>
+        </div>
+      )}
     </div>
   );
 };

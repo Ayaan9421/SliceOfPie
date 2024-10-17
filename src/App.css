@@ -181,6 +181,7 @@ button:hover {
 
 .home-container p {
   margin-bottom: 2rem;
+  width: 90%;
 }
 
 .home-container button {
@@ -191,6 +192,7 @@ button:hover {
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s;
+  width: 90%;
 }
 
 .home-container button:hover {
@@ -390,7 +392,7 @@ canvas {
 
 .data-table {
   margin-right: 50px; /* Adjust the distance between the table and the chart */
-  margin-top: 40px; /* Move the table down */
+  margin-top: 0px; /* Move the table down */
 }
 
 .data-table input {
@@ -401,8 +403,13 @@ canvas {
 
 .chart-type-options label {
   font-size: 18px;
+  width: 30%;
+  margin-top: 10px;
 }
 
+.chart-type-options select {
+  width: 60%;
+}
 /* Ensure that the canvas gets the proper size for Pie and Donut charts */
 .pie-donut-chart canvas {
   max-width: 300px !important;
