@@ -34,7 +34,7 @@
 }
 
 body {
-  background-color: azure;
+  background-color: rgb(215, 255, 255);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -135,6 +135,7 @@ select,
 input[type="file"] {
   background-color: #f9f9f9;
   color: #000;
+  margin-top: 10px;
 }
 
 button {
@@ -295,9 +296,11 @@ button:hover {
 /* error message css if the file type doesnt match */
 .error-message {
   color: red;
-  font-size: 14px;
+  font-size: 18px;
   margin-top: 10px;
+  margin-bottom: 10px;
 }
+
 /* For Output page - ensure better alignment and larger size for table and chart */
 .output-container {
   display: flex;
@@ -403,12 +406,12 @@ canvas {
 
 .chart-type-options label {
   font-size: 18px;
-  width: 30%;
-  margin-top: 10px;
+  width: 100%;
+  margin-top: 18px;
 }
 
 .chart-type-options select {
-  width: 60%;
+  width: 70%;
 }
 /* Ensure that the canvas gets the proper size for Pie and Donut charts */
 .pie-donut-chart canvas {
@@ -422,4 +425,18 @@ canvas {
 #chart canvas {
   max-width: 400px;
   max-height: 300px;
+}
+
+.exportbtn {
+  background-color: #43b0f1;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border: none;
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+  width: 100%;
 }
