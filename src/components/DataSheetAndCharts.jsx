@@ -2,12 +2,14 @@ import React, { useState, useEffect, useRef } from "react";
 import Papa from "papaparse";
 import { read, utils } from "xlsx";
 import { Chart } from "chart.js/auto";
+import jsPDF from "jspdf"; // Import jsPDF for PDF export
 import "../App.css"; // Ensure this path is correct
 
 const DataSheetAndChart = ({ file, fileType }) => {
   const [data, setData] = useState([]);
   const [labels, setLabels] = useState([]);
   const [chartType, setChartType] = useState("bar"); // Default to 'bar' chart
+  const [saveFormat, setSaveFormat] = useState("png"); // Default save format
   const chartRef = useRef(null);
   const [chartInstance, setChartInstance] = useState(null);
   const [validChartTypes, setValidChartTypes] = useState([]);
@@ -119,9 +121,6 @@ const DataSheetAndChart = ({ file, fileType }) => {
   const processAndRenderChart = () => {
     const ctx = chartRef.current.getContext("2d");
 
-    console.log("Data:", data);
-    console.log("Labels:", labels);
-
     const xAxisLabel = labels.find((label) => !isNumericColumn(data, label));
     const yAxisLabels = labels.filter((label) => isNumericColumn(data, label));
 
@@ -183,6 +182,14 @@ const DataSheetAndChart = ({ file, fileType }) => {
             },
           },
         },
+        plugins: {
+          legend: { position: "top" },
+          tooltip: {
+            backgroundColor: "white",
+            titleColor: "black",
+            bodyColor: "black",
+          }, // Ensure tooltip visibility
+        },
       },
     });
     setChartInstance(newChartInstance);
@@ -200,6 +207,50 @@ const DataSheetAndChart = ({ file, fileType }) => {
   const handleChartTypeChange = (e) => {
     setChartType(e.target.value);
   };
+
+  const handleFormatChange = (e) => {
+    setSaveFormat(e.target.value);
+  };
+
+  const handleSaveChart = () => {
+    if (!chartRef.current) return;
+  
+    const canvas = chartRef.current;
+  
+    // Create a new canvas to draw the chart on without clearing the original
+    const tempCanvas = document.createElement("canvas");
+    tempCanvas.width = canvas.width;
+    tempCanvas.height = canvas.height;
+    const tempCtx = tempCanvas.getContext("2d");
+  
+    // Fill the temporary canvas with a white background
+    tempCtx.fillStyle = "white"; // Set the fill color to white
+    tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height); // Fill the canvas with white
+  
+    // Draw the current chart onto the temporary canvas
+    tempCtx.drawImage(canvas, 0, 0);
+  
+    const format = saveFormat;
+    const xAxisLabel = labels.find((label) => !isNumericColumn(data, label));
+    const yAxisLabels = labels.filter((label) => isNumericColumn(data, label));
+    const fileName = `${xAxisLabel} vs ${yAxisLabels.join('-')}`;
+  
+    if (format === "png" || format === "jpg") {
+      const link = document.createElement("a");
+      link.download = `${fileName}.${format}`; // Use dynamic naming
+      link.href = tempCanvas.toDataURL(`image/${format}`);
+      link.click();
+    } else if (format === "pdf") {
+      const pdf = new jsPDF();
+      const imgData = tempCanvas.toDataURL("image/png");
+      
+      const imgWidth = 180; // Set image width for PDF
+      const imgHeight = (tempCanvas.height * imgWidth) / tempCanvas.width; // Maintain aspect ratio
+      pdf.addImage(imgData, "PNG", 10, 10, imgWidth, imgHeight);
+      pdf.save(`${fileName}.pdf`); // Save with dynamic naming
+    }
+  };
+  
 
   return (
     <div>
@@ -241,26 +292,26 @@ const DataSheetAndChart = ({ file, fileType }) => {
       {/* Dropdown to select chart type */}
       {validChartTypes.length > 0 && (
         <div className="chart-type-options" style={{ marginTop: "20px" }}>
-          <label htmlFor="chart-type-select">Select Chart Type:</label>
-          <select
-            id="chart-type-select"
-            value={chartType}
-            onChange={handleChartTypeChange}
-          >
-            {validChartTypes
-              .filter(
-                (type) =>
-                  !(
-                    hasNegativeValues &&
-                    (type === "pie" || type === "doughnut")
-                  )
-              )
-              .map((type) => (
-                <option key={type} value={type}>
-                  {type.charAt(0).toUpperCase() + type.slice(1)} Chart
-                </option>
-              ))}
+          <label>Chart Type:</label>
+          <select onChange={handleChartTypeChange} value={chartType}>
+            {validChartTypes.map((type) => (
+              <option key={type} value={type}>
+                {type.charAt(0).toUpperCase() + type.slice(1)}
+              </option>
+            ))}
           </select>
+
+          {/* Dropdown for save format */}
+          <label style={{ marginLeft: "20px" }}>Save Format:</label>
+          <select onChange={handleFormatChange} value={saveFormat}>
+            <option value="png">PNG</option>
+            <option value="jpg">JPG</option>
+            <option value="pdf">PDF</option>
+          </select>
+
+          <button onClick={handleSaveChart} style={{ marginLeft: "20px" }}>
+            Save Chart
+          </button>
         </div>
       )}
     </div>
