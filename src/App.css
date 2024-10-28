@@ -42,7 +42,7 @@ body {
   overflow-x: hidden;
 }
 .navbar {
-  background-color: #43b0f1;
+  background-color: #67bff1;
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -65,9 +65,9 @@ body {
   text-decoration: none;
 }
 .navbar a:hover {
-  background-color: #057dcd;
+  /* background-color: #057dcd; */
   color: black;
-  border-radius: 30%;
+
 }
 .main_container {
   display: flex;
@@ -155,6 +155,9 @@ button:hover {
 
 .app {
   text-align: center;
+  height: 100vh;
+  background: linear-gradient(to bottom, #dde9f0, #84c4f1); /* Vertical gradient from top to bottom */
+
 }
 
 /* Home page styles */
@@ -165,6 +168,7 @@ button:hover {
   align-items: center;
   margin-top: 40px;
   overflow: hidden;
+
 }
 .home-container {
   display: flex;
@@ -427,16 +431,38 @@ canvas {
   max-height: 300px;
 }
 
-.exportbtn {
-  background-color: #43b0f1;
+/* Styling for the export and save buttons at the bottom */
+.exportbtn,
+.save-chart-btn {
+  background-color: #008CBA; /* Primary button color */
   color: #ffffff;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+  padding: 10px 20px; /* Increase padding for a better look */
+  font-size: 16px; /* Larger font size for visibility */
   border: none;
-  display: flex;
-  text-align: center;
-  justify-content: center;
-  align-items: center;
-  margin-top: 10px;
-  width: 100%;
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease; /* Smooth color change and slight scale */
+  margin: 5px; /* Add space between buttons */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+}
+
+/* Styling for the export and save buttons at the bottom */
+.exportbtn,
+.save-chart-btn {
+  background-color: #43b0f1; /* Same color as navbar */
+  color: #ffffff;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+  margin: 5px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.exportbtn:hover,
+.save-chart-btn:hover {
+  background-color: #057dcd; /* Navbar hover color */
+  transform: scale(1.05);
 }
